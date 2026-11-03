@@ -41,6 +41,7 @@ Stuck halfway through a section? Look at the commits on that section's branch (`
 | 4 | Embeddings in depth | `embeddings-in-depth` |
 | 5 | Your first vector database: Chroma | `your-first-vector-database-chroma` |
 | 6 | Qdrant: a production vector database | `qdrant-a-production-vector-database` |
+| 7 | Indexes: making search fast | `indexes-making-search-fast` |
 | | The finished course code | `main` |
 
 ## The search API (the project at the end of the course)
