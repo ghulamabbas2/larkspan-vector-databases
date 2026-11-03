@@ -37,6 +37,7 @@ Stuck halfway through a section? Look at the commits on that section's branch (`
 | Udemy section | Section | Branch |
 |---|---|---|
 | 2 | Get set up | `get-set-up` |
+| 3 | LLM essentials crash course | `llm-essentials-crash-course` |
 | | The finished course code | `main` |
 
 ## The search API (the project at the end of the course)
