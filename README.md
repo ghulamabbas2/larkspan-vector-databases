@@ -38,6 +38,7 @@ Stuck halfway through a section? Look at the commits on that section's branch (`
 |---|---|---|
 | 2 | Get set up | `get-set-up` |
 | 3 | LLM essentials crash course | `llm-essentials-crash-course` |
+| 4 | Embeddings in depth | `embeddings-in-depth` |
 | | The finished course code | `main` |
 
 ## The search API (the project at the end of the course)
