@@ -13,11 +13,9 @@ from qdrant_client import models
 import settings
 from vector_databases.filter_search import add_payload_indexes, only, search
 
-
 def search_for_customer(customer_id: str, question: str, limit: int = 10) -> list:
     """The customer's own tickets closest to the question. The filter is always added here, never by the caller."""
     return search(question, only(customer_id=customer_id), limit)
-
 
 if __name__ == "__main__":
     # 1. One collection for all 50 customers, with a tenant index on customer_id

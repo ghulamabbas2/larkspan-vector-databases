@@ -47,7 +47,6 @@ def found(question: str, query_filter, **params) -> str:
     results = search(question, query_filter, **params)
     return f"{len(results)} results, {len(truth & {point.id for point in results})} of the {len(truth)} exact search finds"
 
-
 if __name__ == "__main__":
     question = "we stopped using it, can we have our money back?"
     starter = only(plan="Starter")
