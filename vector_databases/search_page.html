@@ -1,0 +1,165 @@
+<!doctype html>
+<!-- The Larkspan search page. search_api.py serves it at http://127.0.0.1:8000/
+     It only calls our own API: GET /health once, then GET /search for each search. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Larkspan ticket search</title>
+<style>
+  :root {
+    --bg: #f6f7fb; --card: #ffffff; --text: #1d2433; --muted: #5d6679; --line: #e3e6ee;
+    --accent: #4f46e5; --accent-soft: #eef0ff; --good: #0f7b55; --warn: #a15c00; --bad: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1320; --card: #171c2c; --text: #e8ebf3; --muted: #9aa3b8; --line: #2a3147;
+            --accent: #8b85ff; --accent-soft: #23264a; --good: #4cc79a; --warn: #f0a640; --bad: #ff7a6e; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { font-size: 28px; margin: 0; }
+  .sub { color: var(--muted); margin: 4px 0 24px; }
+  form { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .row { display: flex; gap: 10px; }
+  input, select, button { font: inherit; color: inherit; }
+  #q { flex: 1; min-width: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+  button { padding: 12px 20px; border: 0; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: wait; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .filters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  label { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+  .filters select, .filters input { width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+  .examples { margin-top: 14px; font-size: 14px; color: var(--muted); }
+  .examples button { background: var(--accent-soft); color: var(--accent); padding: 4px 10px; margin: 4px 6px 0 0; font-size: 14px; font-weight: 500; border-radius: 999px; white-space: normal; text-align: left; }
+  #status { margin: 20px 4px 10px; color: var(--muted); font-size: 14px; min-height: 21px; }
+  #status.error { color: var(--bad); font-weight: 600; }
+  .ticket { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+            display: grid; grid-template-columns: 34px 1fr auto; gap: 4px 12px; }
+  .rank { font-weight: 700; color: var(--muted); font-size: 18px; }
+  .subject { font-weight: 650; }
+  .body { color: var(--muted); grid-column: 2 / 4; }
+  .tags { grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .tag { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .tag.urgent { color: var(--bad); border-color: currentColor; } .tag.high { color: var(--warn); border-color: currentColor; }
+  .score { text-align: right; font-size: 13px; color: var(--muted); }
+  .score b { display: block; font-size: 16px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .note { font-size: 13px; color: var(--muted); margin-top: 24px; }
+  @media (max-width: 640px) { .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .row { flex-direction: column; }
+                              .ticket { grid-template-columns: 26px 1fr auto; padding: 12px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Larkspan ticket search</h1>
+  <p class="sub" id="source">Finds the support tickets closest to your question, by meaning and by exact words.</p>
+
+  <form id="form">
+    <div class="row">
+      <input id="q" name="q" type="search" maxlength="500" required autofocus
+             placeholder="Ask in everyday words, or paste an error code like ERR-5031" aria-label="Your question">
+      <button id="go" type="submit">Search</button>
+    </div>
+    <div class="filters">
+      <label>Plan
+        <select name="plan"><option value="">Any plan</option><option>Starter</option><option>Growth</option><option>Enterprise</option></select></label>
+      <label>Priority
+        <select name="priority"><option value="">Any priority</option><option>low</option><option>normal</option><option>high</option><option>urgent</option></select></label>
+      <label>Customer ID
+        <input name="customer_id" placeholder="Any customer, or e.g. cus_026"></label>
+      <label>Results
+        <select name="limit"><option>5</option><option selected>10</option><option>20</option></select></label>
+    </div>
+    <div class="examples">Try:
+      <button type="button">ERR-5031</button><button type="button">we were charged twice this month</button><button type="button">my phone doesn't buzz when someone mentions me</button>
+    </div>
+  </form>
+
+  <p id="status" role="status">Type a question and press Enter.</p>
+  <div id="results"></div>
+
+  <p class="note">Results are ranked by hybrid search: a meaning search and a keyword search, merged with RRF.
+    The score says how high a ticket came in those two lists, so compare scores within one search only.</p>
+</main>
+
+<script>
+const form = document.getElementById("form");
+const statusLine = document.getElementById("status");
+const results = document.getElementById("results");
+
+// One line under the title: which collection the API is searching
+fetch("/health").then(r => r.json()).then(h => {
+  document.getElementById("source").textContent +=
+    ` Searching ${h.tickets.toLocaleString()} tickets in ${h.alias} (${h.collection}).`;
+}).catch(() => {});
+
+function el(tag, className, text) {  // textContent, never innerHTML, so ticket text can't run as code
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function show(tickets) {
+  results.replaceChildren(...tickets.map((t, i) => {
+    const card = el("article", "ticket");
+    const score = el("div", "score", "score");
+    score.prepend(el("b", "", t.score.toFixed(3)));
+    score.title = "RRF score: higher means higher in the meaning and keyword lists";
+    const tags = el("div", "tags");
+    for (const [text, cls] of [[t.ticket_id], [t.customer_id], [t.plan], [t.priority, t.priority], [t.product_area], [t.status]]) {
+      tags.append(el("span", "tag " + (cls || ""), text));
+    }
+    card.append(el("div", "rank", i + 1), el("div", "subject", t.subject), score, el("div", "body", t.body), tags);
+    return card;
+  }));
+}
+
+async function search() {
+  const params = new URLSearchParams();
+  for (const [key, value] of new FormData(form)) if (value.trim()) params.set(key, value.trim());
+  history.replaceState(null, "", "?" + params);  // the address bar keeps the search, so you can share or reload it
+  const button = document.getElementById("go");
+  button.disabled = true; button.textContent = "Searching…";
+  statusLine.className = ""; statusLine.textContent = "Searching…";
+  const start = performance.now();
+  try {
+    const response = await fetch("/search?" + params);
+    if (response.status === 422) {  // FastAPI says which rule the request broke
+      const problems = (await response.json()).detail.map(d => `${d.loc.at(-1)}: ${d.msg}`).join("; ");
+      throw new Error(`The API turned this search down. ${problems}`);
+    }
+    if (!response.ok) throw new Error(`The API had an error (${response.status}). Look at the terminal running fastapi dev.`);
+    const data = await response.json();
+    show(data);
+    const ms = Math.round(performance.now() - start);
+    statusLine.textContent = data.length
+      ? `${data.length} tickets, best match first, in ${ms} ms.`
+      : "No tickets match these filters. Try removing one.";
+  } catch (error) {
+    results.replaceChildren();
+    statusLine.className = "error";
+    statusLine.textContent = error instanceof TypeError
+      ? "Can't reach the API. Is `uv run fastapi dev` still running?"
+      : error.message;
+  } finally {
+    button.disabled = false; button.textContent = "Search";
+  }
+}
+
+form.addEventListener("submit", event => { event.preventDefault(); search(); });
+document.querySelectorAll(".examples button").forEach(b =>
+  b.addEventListener("click", () => { form.q.value = b.textContent; search(); }));
+
+// Opened with ?q=... in the address: fill the form and search straight away
+const opened = new URLSearchParams(location.search);
+for (const [key, value] of opened) {
+  if (!form[key]) continue;
+  form[key].value = value;
+  if (form[key].selectedIndex === -1) form[key].selectedIndex = 0;  // a value the list doesn't offer: back to "Any"
+}
+if (opened.get("q")) search();
+</script>
+</body>
+</html>
