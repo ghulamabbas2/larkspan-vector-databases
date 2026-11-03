@@ -1,0 +1,11 @@
+{
+  "ERR-4012": "Webhook signature verification failed (the signing secret doesn't match).",
+  "ERR-4031": "SSO assertion expired (usually the identity provider's clock is out of sync).",
+  "ERR-4104": "Automation loop detected (an automation triggered itself too many times).",
+  "ERR-4220": "Custom field type mismatch (a value doesn't fit the field's type).",
+  "ERR-4290": "API rate limit exceeded.",
+  "ERR-4403": "Guest users can't access this board.",
+  "ERR-5007": "Import file is too large.",
+  "ERR-5031": "Report export timed out.",
+  "ERR-5102": "Mobile sync conflict (the same task was edited offline on two devices)."
+}

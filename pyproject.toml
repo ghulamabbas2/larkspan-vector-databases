@@ -1,0 +1,36 @@
+[project]
+name = "larkspan-ai"
+version = "1.0.0"
+description = "Course code: the Larkspan dataset and the code from every lecture."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "openai==3.42.1",
+    "anthropic==2.4.0",
+    "pydantic==2.14.2",
+    "python-dotenv==1.2.4",
+    "numpy==2.5.4",
+    "tiktoken==0.14.0",
+    "fastembed==0.9.1",
+    "chromadb==1.5.9",
+    "qdrant-client==1.20.0",
+    "rich==15.0.0",
+    "psycopg[binary]==3.3.7",
+    "pgvector==0.5.1",
+    "langchain-qdrant==1.1.0",
+    "langchain-core==1.7.4",
+    "fastapi[standard]==0.162.0",
+]
+
+[dependency-groups]
+dev = ["pytest==9.2.0"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["live: calls a paid API (needs keys in .env); run with -m live"]
+addopts = "-m 'not live'"
+
+[tool.fastapi]
+entrypoint = "vector_databases.search_api:app"  # so `uv run fastapi dev` knows which app to start

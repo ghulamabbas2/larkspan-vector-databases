@@ -1,0 +1,402 @@
+[
+  {
+    "id": "cus_001",
+    "name": "Ashford Logistics",
+    "plan": "Starter",
+    "seats": 10,
+    "region": "ap-southeast",
+    "customer_since": "2022-03-26"
+  },
+  {
+    "id": "cus_002",
+    "name": "Bluewater Engineering",
+    "plan": "Growth",
+    "seats": 114,
+    "region": "us-west",
+    "customer_since": "2021-03-07"
+  },
+  {
+    "id": "cus_003",
+    "name": "Bluewater Labs",
+    "plan": "Enterprise",
+    "seats": 255,
+    "region": "us-west",
+    "customer_since": "2024-03-07"
+  },
+  {
+    "id": "cus_004",
+    "name": "Bluewater Legal",
+    "plan": "Enterprise",
+    "seats": 1462,
+    "region": "eu-central",
+    "customer_since": "2023-03-22"
+  },
+  {
+    "id": "cus_005",
+    "name": "Brightwater Health",
+    "plan": "Enterprise",
+    "seats": 412,
+    "region": "eu-west",
+    "customer_since": "2021-10-13"
+  },
+  {
+    "id": "cus_006",
+    "name": "Brightwater Legal",
+    "plan": "Starter",
+    "seats": 11,
+    "region": "ap-southeast",
+    "customer_since": "2023-05-28"
+  },
+  {
+    "id": "cus_007",
+    "name": "Clearbrook Architects",
+    "plan": "Enterprise",
+    "seats": 569,
+    "region": "us-west",
+    "customer_since": "2023-11-10"
+  },
+  {
+    "id": "cus_008",
+    "name": "Clearbrook Legal",
+    "plan": "Growth",
+    "seats": 21,
+    "region": "us-east",
+    "customer_since": "2021-11-10"
+  },
+  {
+    "id": "cus_009",
+    "name": "Clearbrook Property",
+    "plan": "Growth",
+    "seats": 102,
+    "region": "ap-southeast",
+    "customer_since": "2021-05-11"
+  },
+  {
+    "id": "cus_010",
+    "name": "Copperfield Consulting",
+    "plan": "Starter",
+    "seats": 12,
+    "region": "eu-west",
+    "customer_since": "2024-02-08"
+  },
+  {
+    "id": "cus_011",
+    "name": "Copperfield Dental Group",
+    "plan": "Enterprise",
+    "seats": 1596,
+    "region": "us-east",
+    "customer_since": "2024-10-28"
+  },
+  {
+    "id": "cus_012",
+    "name": "Copperfield Engineering",
+    "plan": "Enterprise",
+    "seats": 1694,
+    "region": "eu-west",
+    "customer_since": "2021-08-17"
+  },
+  {
+    "id": "cus_013",
+    "name": "Copperfield Health",
+    "plan": "Starter",
+    "seats": 5,
+    "region": "eu-west",
+    "customer_since": "2023-10-23"
+  },
+  {
+    "id": "cus_014",
+    "name": "Copperfield Property",
+    "plan": "Growth",
+    "seats": 28,
+    "region": "eu-west",
+    "customer_since": "2024-08-01"
+  },
+  {
+    "id": "cus_015",
+    "name": "Eastvale Learning",
+    "plan": "Growth",
+    "seats": 34,
+    "region": "us-west",
+    "customer_since": "2024-01-10"
+  },
+  {
+    "id": "cus_016",
+    "name": "Eastvale Property",
+    "plan": "Enterprise",
+    "seats": 1346,
+    "region": "eu-west",
+    "customer_since": "2023-09-28"
+  },
+  {
+    "id": "cus_017",
+    "name": "Fairhollow Media",
+    "plan": "Starter",
+    "seats": 8,
+    "region": "us-west",
+    "customer_since": "2021-04-29"
+  },
+  {
+    "id": "cus_018",
+    "name": "Harbor Analytics",
+    "plan": "Starter",
+    "seats": 12,
+    "region": "eu-central",
+    "customer_since": "2021-05-22"
+  },
+  {
+    "id": "cus_019",
+    "name": "Harbor Outfitters",
+    "plan": "Enterprise",
+    "seats": 377,
+    "region": "us-west",
+    "customer_since": "2024-09-13"
+  },
+  {
+    "id": "cus_020",
+    "name": "Ironbridge Analytics",
+    "plan": "Growth",
+    "seats": 36,
+    "region": "ap-southeast",
+    "customer_since": "2024-05-27"
+  },
+  {
+    "id": "cus_021",
+    "name": "Ironbridge Architects",
+    "plan": "Growth",
+    "seats": 84,
+    "region": "us-west",
+    "customer_since": "2022-10-01"
+  },
+  {
+    "id": "cus_022",
+    "name": "Ironbridge Foods",
+    "plan": "Starter",
+    "seats": 13,
+    "region": "eu-central",
+    "customer_since": "2023-11-26"
+  },
+  {
+    "id": "cus_023",
+    "name": "Ironbridge Health",
+    "plan": "Growth",
+    "seats": 43,
+    "region": "eu-west",
+    "customer_since": "2021-02-13"
+  },
+  {
+    "id": "cus_024",
+    "name": "Ironbridge Outfitters",
+    "plan": "Growth",
+    "seats": 90,
+    "region": "us-east",
+    "customer_since": "2021-05-26"
+  },
+  {
+    "id": "cus_025",
+    "name": "Juniper Analytics",
+    "plan": "Growth",
+    "seats": 44,
+    "region": "us-east",
+    "customer_since": "2022-11-08"
+  },
+  {
+    "id": "cus_026",
+    "name": "Juniper Dental Group",
+    "plan": "Starter",
+    "seats": 6,
+    "region": "eu-central",
+    "customer_since": "2022-03-15"
+  },
+  {
+    "id": "cus_027",
+    "name": "Kestrel Architects",
+    "plan": "Growth",
+    "seats": 88,
+    "region": "eu-central",
+    "customer_since": "2022-05-13"
+  },
+  {
+    "id": "cus_028",
+    "name": "Kestrel Consulting",
+    "plan": "Growth",
+    "seats": 67,
+    "region": "us-east",
+    "customer_since": "2021-07-18"
+  },
+  {
+    "id": "cus_029",
+    "name": "Kestrel Logistics",
+    "plan": "Growth",
+    "seats": 69,
+    "region": "eu-central",
+    "customer_since": "2021-04-21"
+  },
+  {
+    "id": "cus_030",
+    "name": "Kestrel Property",
+    "plan": "Growth",
+    "seats": 27,
+    "region": "eu-central",
+    "customer_since": "2022-11-26"
+  },
+  {
+    "id": "cus_031",
+    "name": "Larchmont Logistics",
+    "plan": "Enterprise",
+    "seats": 512,
+    "region": "us-west",
+    "customer_since": "2024-01-04"
+  },
+  {
+    "id": "cus_032",
+    "name": "Marlow Analytics",
+    "plan": "Growth",
+    "seats": 38,
+    "region": "eu-central",
+    "customer_since": "2022-05-27"
+  },
+  {
+    "id": "cus_033",
+    "name": "Marlow Health",
+    "plan": "Enterprise",
+    "seats": 1774,
+    "region": "ap-southeast",
+    "customer_since": "2021-07-20"
+  },
+  {
+    "id": "cus_034",
+    "name": "Marlow Studios",
+    "plan": "Starter",
+    "seats": 11,
+    "region": "us-west",
+    "customer_since": "2021-12-07"
+  },
+  {
+    "id": "cus_035",
+    "name": "Mossgrove Architects",
+    "plan": "Growth",
+    "seats": 42,
+    "region": "eu-central",
+    "customer_since": "2021-05-01"
+  },
+  {
+    "id": "cus_036",
+    "name": "Mossgrove Consulting",
+    "plan": "Starter",
+    "seats": 3,
+    "region": "eu-central",
+    "customer_since": "2022-08-08"
+  },
+  {
+    "id": "cus_037",
+    "name": "Mossgrove Learning",
+    "plan": "Growth",
+    "seats": 115,
+    "region": "eu-central",
+    "customer_since": "2021-11-14"
+  },
+  {
+    "id": "cus_038",
+    "name": "Pinecrest Learning",
+    "plan": "Starter",
+    "seats": 6,
+    "region": "ap-southeast",
+    "customer_since": "2021-05-05"
+  },
+  {
+    "id": "cus_039",
+    "name": "Pinecrest Studios",
+    "plan": "Growth",
+    "seats": 21,
+    "region": "eu-central",
+    "customer_since": "2023-10-27"
+  },
+  {
+    "id": "cus_040",
+    "name": "Redcliff Analytics",
+    "plan": "Enterprise",
+    "seats": 236,
+    "region": "ap-southeast",
+    "customer_since": "2021-06-14"
+  },
+  {
+    "id": "cus_041",
+    "name": "Redcliff Outfitters",
+    "plan": "Enterprise",
+    "seats": 259,
+    "region": "us-west",
+    "customer_since": "2023-04-07"
+  },
+  {
+    "id": "cus_042",
+    "name": "Redcliff Studios",
+    "plan": "Starter",
+    "seats": 12,
+    "region": "ap-southeast",
+    "customer_since": "2021-03-23"
+  },
+  {
+    "id": "cus_043",
+    "name": "Saltmarsh Analytics",
+    "plan": "Growth",
+    "seats": 99,
+    "region": "ap-southeast",
+    "customer_since": "2023-12-07"
+  },
+  {
+    "id": "cus_044",
+    "name": "Silverline Analytics",
+    "plan": "Starter",
+    "seats": 7,
+    "region": "eu-west",
+    "customer_since": "2022-05-04"
+  },
+  {
+    "id": "cus_045",
+    "name": "Silverline Health",
+    "plan": "Starter",
+    "seats": 5,
+    "region": "eu-west",
+    "customer_since": "2023-07-26"
+  },
+  {
+    "id": "cus_046",
+    "name": "Silverline Logistics",
+    "plan": "Starter",
+    "seats": 15,
+    "region": "eu-central",
+    "customer_since": "2024-06-26"
+  },
+  {
+    "id": "cus_047",
+    "name": "Silverline Media",
+    "plan": "Enterprise",
+    "seats": 1221,
+    "region": "us-west",
+    "customer_since": "2023-11-03"
+  },
+  {
+    "id": "cus_048",
+    "name": "Stonehaven Logistics",
+    "plan": "Starter",
+    "seats": 8,
+    "region": "us-west",
+    "customer_since": "2023-01-27"
+  },
+  {
+    "id": "cus_049",
+    "name": "Thornbury Engineering",
+    "plan": "Starter",
+    "seats": 10,
+    "region": "eu-west",
+    "customer_since": "2024-06-06"
+  },
+  {
+    "id": "cus_050",
+    "name": "Westmere Dental Group",
+    "plan": "Enterprise",
+    "seats": 1203,
+    "region": "us-east",
+    "customer_since": "2024-09-29"
+  }
+]
