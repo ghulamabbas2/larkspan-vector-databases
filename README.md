@@ -40,6 +40,7 @@ Stuck halfway through a section? Look at the commits on that section's branch (`
 | 3 | LLM essentials crash course | `llm-essentials-crash-course` |
 | 4 | Embeddings in depth | `embeddings-in-depth` |
 | 5 | Your first vector database: Chroma | `your-first-vector-database-chroma` |
+| 6 | Qdrant: a production vector database | `qdrant-a-production-vector-database` |
 | | The finished course code | `main` |
 
 ## The search API (the project at the end of the course)
