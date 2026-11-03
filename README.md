@@ -43,6 +43,7 @@ Stuck halfway through a section? Look at the commits on that section's branch (`
 | 6 | Qdrant: a production vector database | `qdrant-a-production-vector-database` |
 | 7 | Indexes: making search fast | `indexes-making-search-fast` |
 | 8 | Search that works in the real world | `search-that-works-in-the-real-world` |
+| 9 | Already on Postgres? pgvector | `already-on-postgres-pgvector` |
 | | The finished course code | `main` |
 
 ## The search API (the project at the end of the course)
