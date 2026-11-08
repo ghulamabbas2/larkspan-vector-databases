@@ -6,4 +6,3 @@ __pycache__/
 chroma_data/
 *.pyc
 .DS_Store
-reports/
