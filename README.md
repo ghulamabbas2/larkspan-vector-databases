@@ -44,7 +44,6 @@ Stuck halfway through a section? Look at the commits on that section's branch (`
 
 ```bash
 uv run fastapi dev               # starts the API: the search page is at http://127.0.0.1:8000, each endpoint at /docs
-uv run python -m vector_databases.benchmark_report   # in a second terminal: scores the running API
 ```
 
 The API searches `tickets_live`, so run the production section's `migrate_model.py` first.
@@ -58,7 +57,6 @@ The API searches `tickets_live`, so run the production section's `migrate_model.
 | `settings.py` | Reads your `.env` file: models, database addresses |
 | `tools/` | The setup check and the dataset generator (a later section adds the golden-set builder) |
 | `tests/` | `uv run pytest` runs them (free, no API calls) |
-| `reports/` | The search benchmark report, written by `vector_databases/benchmark_report.py` (not committed: your numbers come from your computer) |
 
 ## Costs
 
