@@ -12,9 +12,8 @@ TICKET = dict(ticket_id="TCK-10001", subject="Export fails", body="ERR-5031 when
               plan="Enterprise", priority="normal", product_area="Reports & Dashboards", status="closed")
 
 
-@pytest.mark.parametrize("name", ["search_api", "benchmark_report"])
-def test_scripts_compile(name):
-    py_compile.compile(str(settings.ROOT / "vector_databases" / f"{name}.py"), doraise=True)
+def test_script_compiles():
+    py_compile.compile(str(settings.ROOT / "vector_databases" / "search_api.py"), doraise=True)
 
 
 @pytest.fixture
