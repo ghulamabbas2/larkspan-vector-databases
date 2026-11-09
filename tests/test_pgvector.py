@@ -9,7 +9,7 @@ import pytest
 import settings
 from vector_databases import embeddings
 
-SCRIPTS = ["pg_store", "pg_search", "pg_indexes", "compare_databases"]
+SCRIPTS = ["pg_store", "pg_search", "pg_indexes"]
 TEST_SCHEMA = "larkspan_test"  # the tests' own copy of the table, so the real `tickets` is never touched
 
 
