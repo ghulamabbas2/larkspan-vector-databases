@@ -23,7 +23,6 @@ from vector_databases.migrate_model import ALIAS, MODELS, live_collection
 
 app = FastAPI(title="Larkspan ticket search")
 
-
 class Ticket(BaseModel):
     """One search result: what the support team sees, plus the RRF score that ranked it."""
     ticket_id: str
@@ -35,7 +34,6 @@ class Ticket(BaseModel):
     product_area: str
     status: str
     score: float
-
 
 def search_tickets(question: str, limit: int = 10, query_filter: models.Filter | None = None) -> list[Ticket]:
     """Hybrid search on the live collection: vector and BM25 lists, each filtered, merged by RRF."""
@@ -67,12 +65,10 @@ def search(
               if value is not None}
     return search_tickets(q, limit, only(**fields) if fields else None)
 
-
 @app.get("/health")
 def health() -> dict:
     """Which collection the alias points at, and how many tickets it holds."""
     return {"alias": ALIAS, "collection": live_collection(), "tickets": client.count(ALIAS).count}
-
 
 @app.get("/", include_in_schema=False)  # a page for people, not an endpoint for apps, so it stays off /docs
 def page() -> FileResponse:
