@@ -28,7 +28,7 @@ On Windows (PowerShell), use `copy .env.example .env` instead of `cp`.
 Each section of the course that has code has its own branch. A branch holds the code as it is at the end of that section, with one commit per lecture.
 
 ```bash
-git checkout get-set-up          # the code at the end of the "Get set up" section
+git checkout get-set-up          # the code at the end of the "Setup" section
 git checkout main                # the finished course code
 ```
 
@@ -36,17 +36,17 @@ Stuck halfway through a section? Look at the commits on that section's branch (`
 
 | Udemy section | Section | Branch |
 |---|---|---|
-| 2 | Get set up | `get-set-up` |
-| 3 | LLM essentials crash course | `llm-essentials-crash-course` |
-| 4 | Embeddings in depth | `embeddings-in-depth` |
-| 5 | Your first vector database: Chroma | `your-first-vector-database-chroma` |
-| 6 | Qdrant: a production vector database | `qdrant-a-production-vector-database` |
-| 7 | Indexes: making search fast | `indexes-making-search-fast` |
-| 8 | Search that works in the real world | `search-that-works-in-the-real-world` |
-| 9 | Already on Postgres? pgvector | `already-on-postgres-pgvector` |
-| 10 | Production and choosing a database | `production-and-choosing-a-database` |
-| 11 | Project: Larkspan semantic search engine | `project-larkspan-semantic-search-engine` |
-| | The finished course code | `main` |
+| 2 | Setup: uv, Docker, API Keys and the Dataset | [`get-set-up`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/get-set-up) |
+| 3 | LLM Essentials: Calls, Tokens and Structured Output | [`llm-essentials-crash-course`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/llm-essentials-crash-course) |
+| 4 | Embeddings in Depth & Similarity Search | [`embeddings-in-depth`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/embeddings-in-depth) |
+| 5 | Your First Vector Database: Hands-On With Chroma | [`your-first-vector-database-chroma`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/your-first-vector-database-chroma) |
+| 6 | Qdrant: A Production Vector Database | [`qdrant-a-production-vector-database`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/qdrant-a-production-vector-database) |
+| 7 | Indexes & Quantization: HNSW, IVF, Scalar & Binary | [`indexes-making-search-fast`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/indexes-making-search-fast) |
+| 8 | Metadata Filtering, Multi-Tenancy & Hybrid Search | [`search-that-works-in-the-real-world`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/search-that-works-in-the-real-world) |
+| 9 | pgvector: Vector Search in Postgres | [`already-on-postgres-pgvector`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/already-on-postgres-pgvector) |
+| 10 | Zero-Downtime Migrations & Choosing a Vector Database | [`production-and-choosing-a-database`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/production-and-choosing-a-database) |
+| 11 | Project: Semantic Search API with FastAPI & Qdrant | [`project-larkspan-semantic-search-engine`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/project-larkspan-semantic-search-engine) |
+| | The finished course code | [`main`](https://github.com/ghulamabbas2/larkspan-vector-databases/tree/main) |
 
 ## The search API (the project at the end of the course)
 
