@@ -1,0 +1,875 @@
+<!doctype html>
+<!-- The Larkspan search page. search_api.py serves it at http://127.0.0.1:8000/
+     It only calls our own API: GET /health once, then GET /search for each search. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ticket search · Larkspan</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #ffffff;
+        --side: #fafafa;
+        --hover: #f7f7f8;
+        --line: #ececee;
+        --line-2: #dcdce0;
+        --text: #18181b;
+        --text-2: #52525b;
+        --text-3: #71717a;
+        --dark: #18181b;
+        --blue: #1d4ed8;
+        --ring: rgba(37, 99, 235, 0.25);
+        --mark: #fef08a;
+        --urgent: #dc2626;
+        --high: #ea580c;
+        --normal: #a1a1aa;
+        --low: #d4d4d8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          14px/1.5 -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      input,
+      button {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      .mono {
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 12px;
+      }
+      :focus-visible {
+        outline: 2px solid var(--blue);
+        outline-offset: 2px;
+      }
+
+      /* The page: header across the top, filters on the left, results on the right */
+      #form {
+        display: grid;
+        grid-template-columns: 248px minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+        min-height: 100vh;
+      }
+
+      header {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        height: 60px;
+        padding: 0 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 208px;
+        flex: none;
+        font-weight: 600;
+      }
+      .brand span {
+        color: var(--text-3);
+        font-weight: 400;
+      }
+      .searchbox {
+        flex: 1;
+        max-width: 720px;
+        display: flex;
+        gap: 8px;
+      }
+      .field {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+      }
+      .field svg {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-3);
+        pointer-events: none;
+      }
+      #q {
+        width: 100%;
+        height: 36px;
+        padding: 0 36px 0 34px;
+        border: 1px solid var(--line-2);
+        border-radius: 8px;
+        background: #fff;
+      }
+      #q::placeholder {
+        color: var(--text-3);
+      }
+      #q:focus {
+        outline: none;
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px var(--ring);
+      }
+      kbd {
+        position: absolute;
+        right: 9px;
+        top: 50%;
+        transform: translateY(-50%);
+        font:
+          11px ui-monospace,
+          Menlo,
+          monospace;
+        color: var(--text-3);
+        border: 1px solid var(--line-2);
+        border-radius: 4px;
+        padding: 0 5px;
+        background: var(--side);
+      }
+      #q:focus ~ kbd,
+      #q:not(:placeholder-shown) ~ kbd {
+        display: none;
+      }
+      #go {
+        height: 36px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--dark);
+        color: #fff;
+        font-weight: 500;
+      }
+      #go:hover {
+        background: #3f3f46;
+      }
+      #go:disabled {
+        opacity: 0.6;
+        cursor: progress;
+      }
+      .health {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-3);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      .health i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--low);
+      }
+      .health.ok i {
+        background: #16a34a;
+      }
+      .health.down i {
+        background: var(--urgent);
+      }
+      .health.down {
+        color: var(--urgent);
+      }
+
+      /* Filters */
+      aside {
+        background: var(--side);
+        border-right: 1px solid var(--line);
+        padding: 20px 16px;
+        display: grid;
+        align-content: start;
+        gap: 24px;
+      }
+      fieldset {
+        border: 0;
+        margin: 0;
+        padding: 0;
+        min-width: 0;
+      }
+      legend,
+      .label {
+        padding: 0;
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-2);
+      }
+      .options label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 8px;
+        margin: 0 -8px;
+        border-radius: 6px;
+        cursor: pointer;
+        color: var(--text-2);
+      }
+      .options label:hover {
+        background: #f0f0f2;
+        color: var(--text);
+      }
+      .options input {
+        accent-color: var(--dark);
+        margin: 0;
+      }
+      .options label:has(:checked) {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex: none;
+        display: inline-block;
+      }
+      .dot.urgent {
+        background: var(--urgent);
+      }
+      .dot.high {
+        background: var(--high);
+      }
+      .dot.normal {
+        background: var(--normal);
+      }
+      .dot.low {
+        background: var(--low);
+      }
+      #customer {
+        width: 100%;
+        height: 32px;
+        padding: 0 10px;
+        border: 1px solid var(--line-2);
+        border-radius: 6px;
+        background: #fff;
+      }
+      #customer:focus {
+        outline: none;
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px var(--ring);
+      }
+      .segmented {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background: #ededf0;
+        border-radius: 7px;
+        padding: 2px;
+      }
+      .segmented input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .segmented label {
+        text-align: center;
+        padding: 3px 0;
+        border-radius: 5px;
+        font-size: 13px;
+        color: var(--text-2);
+        cursor: pointer;
+      }
+      .segmented label:has(:checked) {
+        background: #fff;
+        color: var(--text);
+        font-weight: 500;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+      .segmented label:has(:focus-visible) {
+        outline: 2px solid var(--blue);
+      }
+      .examples {
+        display: grid;
+        gap: 2px;
+      }
+      .examples button {
+        border: 0;
+        background: none;
+        padding: 5px 8px;
+        margin: 0 -8px;
+        border-radius: 6px;
+        text-align: left;
+        color: var(--blue);
+        font-size: 13px;
+      }
+      .examples button:hover {
+        background: #f0f0f2;
+      }
+
+      /* Results */
+      main {
+        padding: 20px 28px 48px;
+        min-width: 0;
+      }
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+        margin-bottom: 12px;
+        min-height: 21px;
+      }
+      #status {
+        margin: 0;
+        font-size: 13px;
+        color: var(--text-2);
+      }
+      #status b {
+        color: var(--text);
+        font-weight: 600;
+      }
+      #status.error {
+        color: var(--urgent);
+      }
+      .ranked {
+        font-size: 12px;
+        color: var(--text-3);
+      }
+      #table[hidden],
+      #message[hidden] {
+        display: none;
+      }
+      #form:has(#table[hidden]) .ranked {
+        visibility: hidden;
+      }
+      .thead,
+      .row {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr) 92px 80px 92px 76px 56px;
+        gap: 16px;
+        align-items: start;
+        padding: 0 12px;
+      }
+      .thead {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-3);
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--line);
+      }
+      .row {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+      }
+      .row:hover {
+        background: var(--hover);
+      }
+      .c-rank {
+        color: var(--text-3);
+        font-variant-numeric: tabular-nums;
+      }
+      .title {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 8px;
+        align-items: baseline;
+      }
+      .subject {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text);
+      }
+      .id {
+        color: var(--text-3);
+      }
+      .body {
+        color: var(--text-2);
+        margin-top: 2px;
+      }
+      mark {
+        background: var(--mark);
+        color: inherit;
+        border-radius: 2px;
+        padding: 0 1px;
+      }
+      .c-pri {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        text-transform: capitalize;
+        color: var(--text-2);
+      }
+      .c-status {
+        text-transform: capitalize;
+        color: var(--text-2);
+      }
+      .c-status.open,
+      .c-status.pending {
+        color: var(--blue);
+        font-weight: 500;
+      }
+      .c-plan,
+      .c-cust {
+        color: var(--text-2);
+      }
+      .c-score {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        color: var(--text);
+      }
+      .inline-meta {
+        display: none;
+        color: var(--text-3);
+        font-size: 12px;
+        margin-top: 6px;
+      }
+      .skeleton {
+        height: 10px;
+        border-radius: 5px;
+        background: #f0f0f2;
+        margin: 5px 0;
+      }
+
+      #message {
+        padding: 72px 24px;
+        text-align: center;
+        color: var(--text-2);
+        max-width: 440px;
+        margin: 0 auto;
+      }
+      #message strong {
+        display: block;
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      #message.error strong {
+        color: var(--urgent);
+      }
+
+      footer {
+        margin-top: 16px;
+        font-size: 12px;
+        color: var(--text-3);
+        max-width: 720px;
+      }
+
+      /* Narrower screens: plan, customer, priority and status move under the ticket text */
+      @media (max-width: 1100px) {
+        .thead,
+        .row {
+          grid-template-columns: 28px minmax(0, 1fr) 56px;
+        }
+        .c-pri,
+        .c-status,
+        .c-plan,
+        .c-cust {
+          display: none;
+        }
+        .inline-meta {
+          display: block;
+        }
+      }
+      /* Phones: filters go above the results */
+      @media (max-width: 760px) {
+        #form {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        header {
+          flex-wrap: wrap;
+          height: auto;
+          padding: 12px 16px;
+          gap: 10px 16px;
+        }
+        .brand {
+          width: auto;
+        }
+        .searchbox {
+          order: 3;
+          flex-basis: 100%;
+          max-width: none;
+        }
+        aside {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+          grid-template-columns: 1fr 1fr;
+          padding: 16px;
+          gap: 16px;
+        }
+        .examples-box {
+          grid-column: 1 / -1;
+        }
+        main {
+          padding: 16px;
+        }
+        .thead,
+        .row {
+          grid-template-columns: minmax(0, 1fr) 52px;
+          padding: 0 4px;
+        }
+        .row {
+          padding-top: 12px;
+          padding-bottom: 12px;
+        }
+        .c-rank,
+        .thead {
+          display: none;
+        }
+        .ranked {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <form id="form">
+      <header>
+        <div class="brand">
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+            <rect width="24" height="24" rx="6" fill="#18181b" />
+            <path
+              d="M8 6v12h8"
+              stroke="#fff"
+              stroke-width="2.4"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Larkspan <span>Support</span>
+        </div>
+        <div class="searchbox">
+          <div class="field">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+            <input
+              id="q"
+              name="q"
+              type="search"
+              maxlength="500"
+              required
+              autofocus
+              autocomplete="off"
+              placeholder="Search tickets in everyday words, or paste an error code"
+              aria-label="Your question"
+            />
+            <kbd>/</kbd>
+          </div>
+          <button id="go" type="submit">Search</button>
+        </div>
+        <div class="health" id="health">
+          <i></i><span id="health-text">Connecting…</span>
+        </div>
+      </header>
+
+      <aside>
+        <fieldset class="options">
+          <legend>Plan</legend>
+          <label
+            ><input type="radio" name="plan" value="" checked /> Any plan</label
+          >
+          <label
+            ><input type="radio" name="plan" value="Starter" /> Starter</label
+          >
+          <label
+            ><input type="radio" name="plan" value="Growth" /> Growth</label
+          >
+          <label
+            ><input type="radio" name="plan" value="Enterprise" />
+            Enterprise</label
+          >
+        </fieldset>
+        <fieldset class="options">
+          <legend>Priority</legend>
+          <label
+            ><input type="radio" name="priority" value="" checked /> Any
+            priority</label
+          >
+          <label
+            ><input type="radio" name="priority" value="urgent" />
+            <span class="dot urgent"></span>Urgent</label
+          >
+          <label
+            ><input type="radio" name="priority" value="high" />
+            <span class="dot high"></span>High</label
+          >
+          <label
+            ><input type="radio" name="priority" value="normal" />
+            <span class="dot normal"></span>Normal</label
+          >
+          <label
+            ><input type="radio" name="priority" value="low" />
+            <span class="dot low"></span>Low</label
+          >
+        </fieldset>
+        <div>
+          <label class="label" for="customer">Customer ID</label>
+          <input
+            id="customer"
+            name="customer_id"
+            placeholder="Any customer, e.g. cus_026"
+            autocomplete="off"
+          />
+        </div>
+        <fieldset>
+          <legend>Results</legend>
+          <div class="segmented">
+            <label><input type="radio" name="limit" value="5" />5</label>
+            <label
+              ><input type="radio" name="limit" value="10" checked />10</label
+            >
+            <label><input type="radio" name="limit" value="20" />20</label>
+          </div>
+        </fieldset>
+        <div class="examples-box">
+          <div class="label">Example searches</div>
+          <div class="examples">
+            <button type="button">ERR-5031</button>
+            <button type="button">we were charged twice this month</button>
+            <button type="button">
+              my phone doesn't buzz when someone mentions me
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <main>
+        <div class="toolbar">
+          <p id="status" role="status"></p>
+          <span class="ranked">Best match first</span>
+        </div>
+        <div id="table" hidden>
+          <div class="thead">
+            <div class="c-rank">#</div>
+            <div>Ticket</div>
+            <div class="c-pri">Priority</div>
+            <div class="c-status">Status</div>
+            <div class="c-plan">Plan</div>
+            <div class="c-cust">Customer</div>
+            <div class="c-score">Score</div>
+          </div>
+          <div id="results"></div>
+        </div>
+        <div id="message">
+          <strong>Search 5,000 support tickets</strong> Type a question in
+          everyday words, or paste an error code like ERR-5031. Press / to jump
+          to the search box.
+        </div>
+        <footer>
+          Results are ranked by hybrid search: a meaning search and a keyword
+          search, merged with RRF. The score says how high a ticket came in
+          those two lists, so compare scores within one search only.
+        </footer>
+      </main>
+    </form>
+
+    <script>
+      const form = document.getElementById("form");
+      const statusLine = document.getElementById("status");
+      const table = document.getElementById("table");
+      const results = document.getElementById("results");
+      const messageBox = document.getElementById("message");
+
+      function el(tag, className, text) {
+        // textContent, never innerHTML, so ticket text can't run as code
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      }
+
+      // Top right: is the API up, and which collection is it searching?
+      const health = document.getElementById("health");
+      const healthText = document.getElementById("health-text");
+      fetch("/health")
+        .then((r) => r.json())
+        .then((h) => {
+          health.className = "health ok";
+          healthText.textContent = `${h.alias} → ${h.collection} · ${h.tickets.toLocaleString()} tickets`;
+        })
+        .catch(() => {
+          health.className = "health down";
+          healthText.textContent = "API not reachable";
+        });
+
+      function highlight(text, question) {
+        // whole words of the question (4+ letters) marked in yellow, as text nodes only
+        const words = question.match(/[\w-]{4,}/g) || [];
+        const node = el("div", "body");
+        if (!words.length) {
+          node.textContent = text;
+          return node;
+        }
+        const pattern = new RegExp(`\\b(${words.join("|")})\\b`, "gi");
+        text
+          .split(pattern)
+          .forEach((part, i) =>
+            node.append(i % 2 ? el("mark", "", part) : part),
+          ); // odd parts are the matches
+        return node;
+      }
+
+      function show(tickets, question) {
+        // one row per ticket
+        results.replaceChildren(
+          ...tickets.map((t, i) => {
+            const title = el("div", "title");
+            title.append(
+              el("span", "subject", t.subject),
+              el("span", "id mono", t.ticket_id),
+            );
+            const ticket = el("div", "c-ticket");
+            ticket.append(
+              title,
+              highlight(t.body, question),
+              el(
+                "div",
+                "inline-meta",
+                [t.priority, t.status, t.plan, t.customer_id].join(" · "),
+              ),
+            );
+            const priority = el("div", "c-pri");
+            priority.append(el("span", "dot " + t.priority), t.priority);
+            const row = el("div", "row");
+            row.append(
+              el("div", "c-rank", i + 1),
+              ticket,
+              priority,
+              el("div", "c-status " + t.status, t.status),
+              el("div", "c-plan", t.plan),
+              el("div", "c-cust mono", t.customer_id),
+              el("div", "c-score mono", t.score.toFixed(3)),
+            );
+            return row;
+          }),
+        );
+        table.hidden = false;
+        messageBox.hidden = true;
+      }
+
+      function message(title, text, className) {
+        // a box in place of the results: nothing found, or an error
+        messageBox.className = className || "";
+        messageBox.replaceChildren(el("strong", "", title), text);
+        table.hidden = true;
+        messageBox.hidden = false;
+      }
+
+      function loading() {
+        // grey placeholder rows while we wait for the API
+        results.replaceChildren(
+          ...[1, 2, 3, 4].map(() => {
+            const lines = el("div");
+            for (const width of ["40%", "85%"]) {
+              const line = el("div", "skeleton");
+              line.style.width = width;
+              lines.append(line);
+            }
+            const row = el("div", "row");
+            row.append(el("div", "c-rank"), lines);
+            return row;
+          }),
+        );
+        table.hidden = false;
+        messageBox.hidden = true;
+      }
+
+      async function search() {
+        const params = new URLSearchParams();
+        for (const [key, value] of new FormData(form))
+          if (value.trim()) params.set(key, value.trim());
+        history.replaceState(null, "", "?" + params); // the address bar keeps the search, so you can share or reload it
+        const button = document.getElementById("go");
+        button.disabled = true;
+        statusLine.className = "";
+        statusLine.textContent = "Searching…";
+        loading();
+        const start = performance.now();
+        try {
+          const response = await fetch("/search?" + params);
+          if (response.status === 422) {
+            // FastAPI says which rule the request broke
+            const problems = (await response.json()).detail
+              .map((d) => `${d.loc.at(-1)}: ${d.msg}`)
+              .join("; ");
+            throw new Error(`The API turned this search down. ${problems}`);
+          }
+          if (!response.ok)
+            throw new Error(
+              `The API had an error (${response.status}). Look at the terminal running fastapi dev.`,
+            );
+          const data = await response.json();
+          const ms = Math.round(performance.now() - start);
+          statusLine.replaceChildren(
+            el("b", "", `${data.length} tickets`),
+            ` for “${params.get("q")}” · ${ms} ms`,
+          );
+          if (data.length) show(data, params.get("q"));
+          else
+            message(
+              "No tickets match these filters",
+              "Try removing one of the filters on the left.",
+            );
+        } catch (error) {
+          statusLine.className = "error";
+          statusLine.textContent = "Search failed";
+          message(
+            "Search failed",
+            error instanceof TypeError
+              ? "Can't reach the API. Is `uv run fastapi dev` still running?"
+              : error.message,
+            "error",
+          );
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        search();
+      });
+      form.addEventListener("change", (event) => {
+        // a new filter searches again straight away
+        if (event.target.name !== "q" && form.q.value.trim()) search();
+      });
+      document.querySelectorAll(".examples button").forEach((b) =>
+        b.addEventListener("click", () => {
+          form.q.value = b.textContent;
+          search();
+        }),
+      );
+      document.addEventListener("keydown", (event) => {
+        // press / anywhere to jump to the search box
+        if (event.key === "/" && document.activeElement.tagName !== "INPUT") {
+          event.preventDefault();
+          form.q.focus();
+        }
+      });
+
+      // Opened with ?q=... in the address: fill the form and search straight away
+      const opened = new URLSearchParams(location.search);
+      for (const [key, value] of opened) {
+        const field = form.elements[key];
+        if (!field) continue;
+        field.value = value;
+        if (field.value !== value) field.value = key === "limit" ? "10" : ""; // a value the page doesn't offer: back to the default
+      }
+      if (opened.get("q")) search();
+    </script>
+  </body>
+</html>

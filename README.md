@@ -45,6 +45,7 @@ Stuck halfway through a section? Look at the commits on that section's branch (`
 | 8 | Search that works in the real world | `search-that-works-in-the-real-world` |
 | 9 | Already on Postgres? pgvector | `already-on-postgres-pgvector` |
 | 10 | Production and choosing a database | `production-and-choosing-a-database` |
+| 11 | Project: Larkspan semantic search engine | `project-larkspan-semantic-search-engine` |
 | | The finished course code | `main` |
 
 ## The search API (the project at the end of the course)
