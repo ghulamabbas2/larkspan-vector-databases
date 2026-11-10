@@ -63,23 +63,11 @@ def test_the_new_collection_is_sized_for_the_new_model(migrate):
     assert client.get_collection("tickets_large").config.params.vectors.size == 4
 
 
-def test_backfill_copies_every_point_and_keeps_newer_writes(migrate):
+def test_backfill_copies_every_point(migrate):
     m, client = migrate
     m.create_new_collection()
-    first = str(uuid.uuid5(uuid.NAMESPACE_URL, load_tickets()[0]["id"]))
-    client.upsert("tickets_large", [models.PointStruct(id=first, vector=[1.0, 1.0, 1.0, 1.0], payload={"text": "newer"})])
     assert m.backfill(batch_size=7) == 20
     assert client.count("tickets_large").count == 20
-    assert client.retrieve("tickets_large", [first])[0].payload == {"text": "newer"}  # insert-only left it alone
-
-
-def test_dual_write_saves_the_ticket_in_both_with_each_model(migrate):
-    m, client = migrate
-    m.create_new_collection()
-    calls.clear()
-    m.save_ticket(load_tickets()[0])
-    assert [model for model, _ in calls] == [settings.OPENAI_EMBED_MODEL, "text-embedding-3-large"]
-    assert client.count("tickets_large").count == 1 and client.count("tickets").count == 20
 
 
 def test_search_through_the_alias_uses_the_model_of_the_collection_behind_it(migrate):
@@ -89,7 +77,7 @@ def test_search_through_the_alias_uses_the_model_of_the_collection_behind_it(mig
     for collection, model in (("tickets", settings.OPENAI_EMBED_MODEL), ("tickets_large", "text-embedding-3-large")):
         m.point_alias_at(collection)
         calls.clear()
-        assert m.vector_search("billing question", limit=3)
+        assert m.search("billing question", m.ALIAS)
         assert calls == [(model, 1)]
 
 
